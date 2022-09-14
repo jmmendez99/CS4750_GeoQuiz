@@ -1,18 +1,22 @@
 package com.bignerdranch.android.geoquiz
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.CorrectionInfo
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0 //can't use anymore b/c of deprecation
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,11 +71,35 @@ class MainActivity : AppCompatActivity() {
             //Start Cheat activity and also is a button click listener
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivity(intent)
+            resultLauncher.launch(intent)
+            //startActivityForResult(intent, REQUEST_CODE_CHEAT) ---deprecated
         }
 
         updateQuestion()
     }
+
+    //pulling the value out of the result sent back from CheatActivity
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result -> if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            }
+        }
+//      ------This part of the code didnt work because of a deprecation------
+//    override fun onActivityResult(requestCode: Int,
+//                                  resultCode: Int,
+//                                  data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (resultCode != Activity.RESULT_OK) {
+//            return
+//        }
+//
+//        if(requestCode == REQUEST_CODE_CHEAT) {
+//            quizViewModel.isCheater =
+//                data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+//        }
+//    }
 
     //More life cycle functions with logs attached to them
     override fun onStart() {
@@ -116,13 +144,11 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
-        val messageResId = if (userAnswer == correctAnswer) {
-            R.string.correct_toast
+        val messageResId = when {
+            quizViewModel.isCheater -> R.string.judgement_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
-        else {
-            R.string.incorrect_toast
-        }
-
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                 .show()
     }
