@@ -8,6 +8,7 @@ private const val TAG = "QuizViewModel"
 class QuizViewModel : ViewModel() {
     //Index variable to iterate through the question bank
     var currentIndex = 0
+    var isCheater = false
 
     //List of Question Objects
     private val questionBank = listOf(
