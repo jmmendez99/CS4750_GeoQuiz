@@ -12,12 +12,12 @@ class QuizViewModel : ViewModel() {
 
     //List of Question Objects
     private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
+        Question(R.string.question_mountain, true),
+        Question(R.string.question_country, false),
+        Question(R.string.question_canada, false),
+        Question(R.string.question_antarctica, true),
+        Question(R.string.question_ocean, false),
+        Question(R.string.question_egypt, true))
 
     //Methods to access questionBank answers and to get the questionID
     val currentQuestionAnswer: Boolean

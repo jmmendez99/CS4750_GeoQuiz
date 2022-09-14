@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="24dp"
-            tools:text="@string/question_australia" />
+            tools:text="@string/question_mountain" />
 
         <LinearLayout
             android:layout_width="wrap_content"
